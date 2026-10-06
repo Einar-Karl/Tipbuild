@@ -141,11 +141,8 @@ export async function statementPdf(s: Statement): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  // Standard PDF fonts only cover WinAnsi: replace anything else (e.g. Icelandic þ) with a close ASCII form.
-  const safe = (t: string) =>
-    t
-      .replace(/[þÞ]/g, (c) => (c === 'þ' ? 'th' : 'Th'))
-      .replace(/[^\x20-\x7E -ÿ€]/g, '?');
+  // Standard PDF fonts cover WinAnsi (Latin-1 incl. Icelandic þ ð æ ö, plus €); anything else becomes '?'.
+  const safe = (t: string) => t.replace(/[^\x20-\x7E\u00A0-\u00FF€]/g, '?');
   let page = doc.addPage([595, 842]);
   let y = 790;
   const line = (t: string, opts: { size?: number; bold?: boolean; x?: number } = {}) => {

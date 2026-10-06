@@ -62,7 +62,7 @@ export interface PayoutRunOptions {
  * the provider call carries the same key, and ledger posting is guarded by the status transition.
  */
 export async function runMonthlyPayout(db: Db, opts: PayoutRunOptions): Promise<PayoutRunResult> {
-  const { provider, cfg } = opts;
+  const { cfg } = opts;
   const now = opts.now ?? new Date();
   const period = opts.period ? parsePeriod(opts.period) : previousPeriod(now);
   const actor = opts.actor ?? 'system';

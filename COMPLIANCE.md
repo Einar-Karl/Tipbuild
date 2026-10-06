@@ -1,0 +1,26 @@
+# Compliance checklist
+
+Everything below is a **question for a professional**, not an answer. Each item is marked **needs lawyer/accountant**. Nothing in this repository is legal, tax or accounting advice.
+
+| # | Topic | What the software does | Open question | Owner |
+|---|-------|------------------------|---------------|-------|
+| 1 | **Payment institution / e-money** (PSD2 and the Icelandic payment services rules) | Default `psp_scheduled_payout`: the licensed provider receives and holds the money, the platform earns an application fee only. `platform_pooled` is disabled unless `ALLOW_POOLED_FUNDS=true`. | Does the destination-charge model leave the platform outside the regulated perimeter? Is any exemption (commercial agent, limited network) relevant? Is a Stripe Connect cross-border recipient set-up acceptable for Icelandic guides? | **needs lawyer** |
+| 2 | **Safeguarding of client funds** | Double-entry ledger; reconciliation report that checks guide balances <= funds in the designated account (pooled mode). | Which account, which institution, which segregation and reporting duties apply if pooled mode is ever used? | **needs lawyer** |
+| 3 | **Interest on pooled funds** | Float report estimates the interest (assumed rate, default 6 %). In `psp_scheduled_payout` the platform attributes 0 to itself. | May interest on safeguarded funds be retained at all? Under which licence? Accounting treatment? | **needs lawyer/accountant** |
+| 4 | **KYC / AML / sanctions** | Handled by the payment provider in `psp_scheduled_payout` (guides verify identity and bank details in the hosted onboarding). The platform stores no ID documents or bank details. | Platform's own duties (risk assessment, reporting suspicious activity, tipping used for laundering) even when the provider does KYC. In pooled mode the platform carries these duties itself. | **needs lawyer** |
+| 5 | **Tax reporting for guide income** | Monthly statements (CSV/PDF) per guide with gross, fee, net and payout. | Are tips employment income, self-employment income or gifts in Iceland? Does the platform have reporting duties (for example DAC7 platform reporting, local third-party reporting)? Who tells guides? | **needs accountant** |
+| 6 | **VAT on the service fee** | The fee is stored separately (ledger account `platform_fee`) and excluded from the guide's net. Amounts are stored gross; VAT is not computed. | Is the fee subject to Icelandic VAT (24 %)? Is it a service to the guide or to the tourist? Place of supply for foreign tourists? Is the fee shown VAT-inclusive? Invoicing to guides/operators? | **needs accountant** |
+| 7 | **Consumer terms on tipping** | Fee and net amount shown before paying; min EUR 1, max EUR 500; thank-you page; placeholders in `/legal/terms`. | Wording of the terms: voluntary gift, refunds, chargebacks, price transparency, cooling-off rights, language requirements, who the contracting party is. | **needs lawyer** |
+| 8 | **GDPR / data protection** | No tourist accounts. Ratings and text stored without identity. Country derived from the host's IP header (IP not stored). Guides can export and delete their data (financial records are kept). Retention job clears old free text. Only essential cookies (session, language). | Controller/processor roles, DPAs with Stripe, Resend, hosting and database providers, international transfers, privacy policy text, whether a DPO is needed, cookie notice requirements. | **needs lawyer** |
+| 9 | **Strong customer authentication (SCA)** | Provided by the payment provider's Payment Element. | Confirm no exemption logic is needed on our side. | needs lawyer (low) |
+| 10 | **Refunds and chargebacks** | Full refunds reverse the ledger. If the guide was already paid out, the platform absorbs the shortfall (audited). Partial refunds are flagged for manual handling. | Who bears chargeback losses, and is that written in the guide terms? | **needs lawyer/accountant** |
+| 11 | **Accounting** | Append-only double-entry ledger, audit log, CSV exports with `;` separators and decimal comma for Excel. | Chart of accounts mapping, revenue recognition for the fee, retention periods for books and records (the app keeps financial records indefinitely). | **needs accountant** |
+| 12 | **Operator / guide agreements** | Optional operator with fee override and review link. | Contract between platform, operator and guide; who owns the tip; employment law treatment of tips for guides employed by an operator ("tronc"). | **needs lawyer** |
+| 13 | **Consumer protection for reviews** | 4-5 star ratings are offered a link to a public review, 1-3 star go to private feedback. | "Review gating" (steering only happy customers to public reviews) is restricted or banned by some platforms (Google) and consumer authorities. Remove the split if it is not acceptable. | **needs lawyer** |
+
+## Technical controls that support compliance
+
+* Webhook signature verification and idempotency, rate limiting on public endpoints, CSRF origin checks, strict zod validation.
+* Guides can only read their own data (every query is scoped to the signed-in guide).
+* Audit log for payouts, fee changes, admin actions and exports.
+* Secrets only in environment variables; no card data is ever stored or logged.

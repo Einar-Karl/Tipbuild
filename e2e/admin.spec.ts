@@ -68,4 +68,27 @@ test.describe('admin and the monthly payout job', () => {
     const summary = await (await page.request.get('/api/admin/summary')).json();
     expect(summary.payoutRuns[0].count).toBe(2);
   });
+
+  test('reconciliation and float reports', async ({ page, request }) => {
+    await signIn(page, 'admin@example.com');
+    const rec = await (await page.request.get('/api/admin/reconciliation')).json();
+    expect(rec.checks.filter((c: { status: string }) => c.status === 'fail')).toEqual([]);
+    expect(rec.fundsModel).toBe('psp_scheduled_payout');
+    expect(rec.checks.find((c: { id: string }) => c.id === 'safeguarding').status).toBe('n/a');
+
+    expect((await request.post('/api/cron/daily-float-snapshot')).status()).toBe(401);
+    const snap = await request.post('/api/cron/daily-float-snapshot', { headers: CRON });
+    expect(snap.status()).toBe(200);
+    const fl = await (await page.request.get('/api/admin/float')).json();
+    expect(fl.months.length).toBeGreaterThanOrEqual(1);
+    expect(fl.months[0].accruedInterestMinor).toBe(0); // scheduled mode: nothing accrues to the platform
+    expect(fl.months[0].hypotheticalInterestMinor).toBeGreaterThan(0);
+    expect(fl.disclaimer).toContain('In psp_scheduled_payout mode this is 0.');
+
+    await page.goto('/admin/reconciliation');
+    await expect(page.getByTestId('overall')).toHaveText(/ok|warn/);
+    await page.goto('/admin/float');
+    await expect(page.getByTestId('float-disclaimer')).toContainText('Estimate only');
+    expect((await request.post('/api/cron/retention', { headers: CRON })).status()).toBe(200);
+  });
 });
