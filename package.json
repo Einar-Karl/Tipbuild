@@ -1,0 +1,61 @@
+{
+  "name": "tip",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Digital tipping platform for tour guides",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx scripts/prepare-dev.ts && next dev",
+    "build": "next build",
+    "start": "next start",
+    "vercel-build": "tsx scripts/migrate.ts && next build",
+    "lint": "next lint --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:reset": "rm -rf .data && tsx scripts/seed.ts",
+    "job:payout": "tsx scripts/run-payout.ts",
+    "job:float": "tsx scripts/run-float.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@stripe/react-stripe-js": "^3.11.0",
+    "@stripe/stripe-js": "^7.10.0",
+    "dotenv": "^18.0.5",
+    "drizzle-orm": "^0.45.3",
+    "next": "^15.5.27",
+    "pdf-lib": "^1.17.1",
+    "pg": "^8.23.1",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "stripe": "^17.7.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@playwright/test": "~1.56",
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.6.1",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.5.27",
+    "fast-check": "^4.10.2",
+    "postcss": "^8.5.29",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}

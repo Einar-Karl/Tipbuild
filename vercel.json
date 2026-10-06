@@ -1,0 +1,7 @@
+{
+  "crons": [
+    { "path": "/api/cron/monthly-payout", "schedule": "0 6 1 * *" },
+    { "path": "/api/cron/daily-float-snapshot", "schedule": "0 1 * * *" },
+    { "path": "/api/cron/retention", "schedule": "30 3 * * *" }
+  ]
+}
