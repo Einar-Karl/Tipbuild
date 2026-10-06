@@ -53,3 +53,12 @@ Items marked **ASSUMPTION** were not specified and were decided while building. 
 * **Review gating:** ratings 4-5 offer the operator's public review link, 1-3 private feedback, as specified. See `COMPLIANCE.md` item 13: this practice is restricted by some review platforms.
 * **Library versions:** Next.js 15 (App Router, React 19), Tailwind CSS 3, Zod 3, Stripe SDK 17, Vitest 3, Playwright 1.56, ESLint 8. Chosen for stability; newer majors exist.
 * **Fonts** are self-hosted through `@fontsource-variable` packages (no request to Google Fonts from the tourist's phone).
+
+## Hardening (milestone 7)
+
+* **Security headers:** `X-Frame-Options`, `X-Content-Type-Options`, HSTS, `Referrer-Policy`, `Permissions-Policy`, and a *partial* Content-Security-Policy (`frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'`). A full `script-src` policy was deliberately **not** enabled: Stripe Elements / Apple Pay / Google Pay load scripts and frames from several Stripe, Google and Apple hosts, and a wrong policy would silently break payments. Follow-up: add a nonce-based CSP and verify it against live Express Checkout in a staging environment.
+* **Accessibility:** axe-core runs in the e2e suite (WCAG 2 A/AA, light and dark mode) on tourist, guide, admin and public pages and fails on serious/critical findings. Fixed from the audit: button text colour on the accent (white on orange was 3:1, now dark ink, 6:1), success-green contrast, keyboard-focusable scrollable tables, 44 px language links. There is a keyboard-only test for the tip form. A manual screen-reader pass with real Apple Pay / Google Pay sheets is still recommended.
+* **Rate limits:** tip intent 20/min/IP, ratings 20/min/IP, tip status 120/min/IP, magic link 10/min/IP and 3 per 10 min per address (per-address limit answers identically so addresses cannot be enumerated). See the note on in-memory limits above.
+* **Audit log:** payouts (created, paid, failed, run), operator and fee changes, guide-to-operator assignment, CSV exports, admin sign-ins, payout-account creation, guide deletion and data export, amount mismatches, refund shortfalls, partial refunds needing manual handling.
+* **E2E sign-in:** Playwright signs in once per role in a setup project and reuses the stored session, so tests do not hit the magic-link rate limit; the guide spec still exercises the full magic-link flow.
+* **Health check:** `GET /api/health` (database ping) for uptime monitors. `robots.txt` disallows the tip pages, dashboard, admin and API.

@@ -12,9 +12,9 @@
   --line: 218 213 203;
   --muted: 95 99 107;
   --accent: 214 130 28;
-  --accent-ink: 255 255 255;
+  --accent-ink: 20 22 26;
   --danger: 185 28 28;
-  --ok: 21 128 61;
+  --ok: 17 110 50;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -17,6 +17,11 @@ export default defineConfig({
     ...devices['Pixel 7'],
     launchOptions: process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
   },
+  projects: [
+    // Signs in once per role and stores the session so tests do not hammer the (rate-limited) magic-link endpoint.
+    { name: 'setup', testMatch: /auth\.setup\.ts/ },
+    { name: 'mobile', testIgnore: /auth\.setup\.ts/, dependencies: ['setup'] },
+  ],
   webServer: {
     // Fresh embedded database, seeded demo data, production build, MockProvider.
     command: `rm -rf .data/e2e && npx tsx scripts/seed.ts && npx next build && npx next start -p ${PORT}`,

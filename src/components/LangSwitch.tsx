@@ -13,7 +13,7 @@ export function LangSwitch({ locale }: { locale: Locale }) {
           href={`/api/lang?l=${l}&next=${encodeURIComponent(pathname)}`}
           lang={l}
           aria-current={l === locale ? 'true' : undefined}
-          className={`rounded-md px-2 py-1 ${l === locale ? 'bg-ink font-semibold text-page' : 'text-muted underline'}`}
+          className={`inline-flex min-h-[44px] items-center rounded-md px-3 ${l === locale ? 'bg-ink font-semibold text-page' : 'text-ink underline'}`}
         >
           {LOCALE_NAMES[l]}
         </a>

@@ -10,3 +10,6 @@ export async function signIn(page: Page, email: string) {
 }
 
 export const CRON = { authorization: 'Bearer e2e-cron-secret' };
+
+export const AUTH = { admin: 'e2e/.auth/admin.json', anna: 'e2e/.auth/anna.json' } as const;
+export const ORIGIN = 'http://localhost:3100';

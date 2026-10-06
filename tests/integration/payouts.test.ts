@@ -198,6 +198,17 @@ describe('statements', () => {
   });
 });
 
+describe('statement PDF', () => {
+  it('renders Icelandic names without failing', async () => {
+    const g = await makeGuide(db, { displayName: 'Þórdís Ægisdóttir' });
+    await tipAt(g.id, 10000, '2026-08-10T10:00:00Z');
+    await runMonthlyPayout(db, { provider, cfg: scheduled, now: NOW });
+    const [p] = await payoutRows(g.id);
+    const pdf = await statementPdf((await buildStatement(db, p!.id))!);
+    expect(Buffer.from(pdf.subarray(0, 4)).toString()).toBe('%PDF');
+  });
+});
+
 describe('uniqueness', () => {
   it('the database itself refuses a second payout for the same guide and month', async () => {
     const g = await makeGuide(db);

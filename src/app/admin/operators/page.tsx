@@ -24,7 +24,7 @@ export default async function AdminOperators() {
         <OperatorForm />
       </div>
       <h2 className="text-xl font-bold">Guides</h2>
-      <div className="table-wrap">
+      <div className="table-wrap" role="region" aria-label="Guides" tabIndex={0}>
         <table className="table">
           <thead>
             <tr>

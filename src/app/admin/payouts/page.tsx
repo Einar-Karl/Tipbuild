@@ -19,7 +19,7 @@ export default async function AdminPayouts() {
     <main className="flex flex-col gap-6">
       <h1 className="text-3xl font-bold">Payouts</h1>
       <PayoutRunForm defaultPeriod={previousPeriod(new Date()).label} />
-      <div className="table-wrap">
+      <div className="table-wrap" role="region" aria-label="All payouts" tabIndex={0}>
         <table className="table" data-testid="admin-payouts">
           <thead>
             <tr>

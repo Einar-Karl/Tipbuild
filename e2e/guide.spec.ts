@@ -1,5 +1,5 @@
 import { expect, test, type Browser } from '@playwright/test';
-import { signIn } from './helpers';
+import { AUTH, signIn } from './helpers';
 
 async function tipAsTourist(browser: Browser, slug: string) {
   const ctx = await browser.newContext({ baseURL: 'http://localhost:3100' });
@@ -69,5 +69,16 @@ test.describe('guide journey', () => {
     expect(tours.tours.map((t: { title: string }) => t.title)).toEqual(['Golden Circle Day Trip']);
     const other = await page.request.patch('/api/me/tours/00000000-0000-4000-8000-000000000000', { data: { active: false }, headers: { origin: 'http://localhost:3100' } });
     expect(other.status()).toBe(404);
+  });
+});
+
+test.describe('Icelandic guide dashboard', () => {
+  test.use({ storageState: AUTH.anna });
+
+  test('is translated and keeps European formats', async ({ page }) => {
+    await page.goto('/api/lang?l=is&next=/dashboard');
+    await expect(page.getByRole('heading', { name: /Velkomin\(n\), Anna Sigurðardóttir/ })).toBeVisible();
+    await expect(page.getByTestId('balance')).toContainText(/\d,\d{2}\s€/);
+    await expect(page.getByText('Saga þjórfés')).toBeVisible();
   });
 });

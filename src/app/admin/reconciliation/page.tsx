@@ -10,7 +10,7 @@ const BADGE: Record<CheckStatus, string> = {
   ok: 'bg-ok/15 text-ok',
   warn: 'bg-accent/20 text-ink',
   fail: 'bg-danger/15 text-danger',
-  'n/a': 'bg-line text-muted',
+  'n/a': 'bg-line text-ink',
 };
 
 export default async function Reconciliation({ searchParams }: { searchParams: Promise<{ designated?: string }> }) {
@@ -56,7 +56,7 @@ export default async function Reconciliation({ searchParams }: { searchParams: P
         </form>
       )}
 
-      <div className="table-wrap">
+      <div className="table-wrap" role="region" aria-label="Reconciliation checks" tabIndex={0}>
         <table className="table" data-testid="checks">
           <thead>
             <tr>

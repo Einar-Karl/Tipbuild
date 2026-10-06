@@ -44,7 +44,7 @@ export default async function AdminOverview() {
         <h2 id="runs-h" className="text-xl font-bold">
           Payout runs
         </h2>
-        <div className="table-wrap">
+        <div className="table-wrap" role="region" aria-label="Payout runs" tabIndex={0}>
           <table className="table">
             <thead>
               <tr>
@@ -86,7 +86,7 @@ export default async function AdminOverview() {
         {s.failedWebhooks.length === 0 ? (
           <p className="text-muted">None. Failed events are retried by the provider and cleared when they succeed.</p>
         ) : (
-          <div className="table-wrap">
+          <div className="table-wrap" role="region" aria-label="Failed webhooks" tabIndex={0}>
             <table className="table">
               <thead>
                 <tr>

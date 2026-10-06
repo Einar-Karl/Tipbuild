@@ -11,3 +11,4 @@ next-env.d.ts
 .env.local
 .env.*.local
 .vercel
+e2e/.auth

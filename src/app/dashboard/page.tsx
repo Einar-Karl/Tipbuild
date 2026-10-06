@@ -129,7 +129,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         {rows.length === 0 ? (
           <p className="text-muted">{m.dash.noTips}</p>
         ) : (
-          <div className="table-wrap">
+          <div className="table-wrap" role="region" aria-label="Tip history" tabIndex={0}>
             <table className="table" data-testid="tips-table">
               <thead>
                 <tr>
@@ -179,7 +179,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         {payouts.length === 0 ? (
           <p className="text-muted">{m.dash.noPayouts}</p>
         ) : (
-          <div className="table-wrap">
+          <div className="table-wrap" role="region" aria-label="Payouts" tabIndex={0}>
             <table className="table" data-testid="payouts-table">
               <thead>
                 <tr>

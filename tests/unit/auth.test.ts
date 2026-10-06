@@ -11,7 +11,10 @@ describe('session cookie', () => {
     const c = signSession('user-1', secret, now, 100);
     expect(verifySession(c, secret, now)).toBe('user-1');
     expect(verifySession(c, 'x'.repeat(40), now)).toBeNull();
-    expect(verifySession(c.replace(/.$/, (ch) => (ch === 'A' ? 'B' : 'A')), secret, now)).toBeNull();
+    // flip a character in the middle of the signature (the last base64 char only carries padding bits)
+    const mid = c.length - 20;
+    const flipped = c.slice(0, mid) + (c[mid] === 'A' ? 'B' : 'A') + c.slice(mid + 1);
+    expect(verifySession(flipped, secret, now)).toBeNull();
     const [v, p, s] = c.split('.');
     const forged = Buffer.from(JSON.stringify({ uid: 'admin', exp: 9999999999 })).toString('base64url');
     expect(verifySession(`${v}.${forged}.${s}`, secret, now)).toBeNull();

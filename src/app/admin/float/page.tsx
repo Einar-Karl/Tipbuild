@@ -34,7 +34,7 @@ export default async function FloatPage() {
           </p>
         </div>
       </section>
-      <div className="table-wrap">
+      <div className="table-wrap" role="region" aria-label="Float by month" tabIndex={0}>
         <table className="table" data-testid="float-months">
           <thead>
             <tr>
