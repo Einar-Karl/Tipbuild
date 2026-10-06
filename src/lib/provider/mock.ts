@@ -45,7 +45,7 @@ export class MockProvider implements PaymentProvider {
     return { providerPaymentId: id, clientSecret: `${id}_secret_${args.tipId.slice(0, 8)}` };
   }
 
-  async transferToGuide(args: { idempotencyKey: string }) {
+  async transferToGuide(args: Parameters<PaymentProvider['transferToGuide']>[0]) {
     if (this.opts.failTransfers) throw new Error('mock transfer failure');
     // Deterministic per idempotency key, like a real provider.
     const id = createHmac('sha256', this.opts.secret).update(args.idempotencyKey).digest('hex').slice(0, 24);

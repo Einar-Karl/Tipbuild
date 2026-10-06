@@ -176,7 +176,7 @@ async function applyEvent(
     }
     case 'payout.paid':
     case 'payout.failed':
-      return handlePayoutEvent(tx, event);
+      return handlePayoutEvent(tx, cfg, event);
   }
 }
 
