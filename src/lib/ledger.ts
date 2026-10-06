@@ -43,9 +43,9 @@ export async function ensureAccount(
  */
 export async function postTransaction(
   db: Db,
-  args: { lines: Line[]; currency: string; refType: string; refId: string },
+  args: { lines: Line[]; currency: string; refType: string; refId: string; at?: Date },
 ): Promise<string> {
-  const { lines, currency, refType, refId } = args;
+  const { lines, currency, refType, refId, at } = args;
   if (lines.length < 2) throw new LedgerError('a transaction needs at least two lines');
   let debits = 0;
   let credits = 0;
@@ -69,6 +69,7 @@ export async function postTransaction(
       currency,
       refType,
       refId,
+      ...(at ? { createdAt: at } : {}),
     })),
   );
   return txnId;
@@ -95,6 +96,7 @@ export async function guidePayableBalance(db: Db, guideId: string, currency: str
 export async function postTipSucceeded(
   db: Db,
   tip: Pick<Tip, 'id' | 'guideId' | 'amountMinor' | 'feeMinor' | 'netMinor' | 'currency'>,
+  at?: Date,
 ): Promise<string> {
   const clearing = await ensureAccount(db, 'guest_clearing', tip.currency);
   const payable = await ensureAccount(db, 'guide_payable', tip.currency, tip.guideId);
@@ -103,7 +105,7 @@ export async function postTipSucceeded(
     { accountId: payable, credit: tip.netMinor },
   ];
   if (tip.feeMinor > 0) lines.push({ accountId: await ensureAccount(db, 'platform_fee', tip.currency), credit: tip.feeMinor });
-  return postTransaction(db, { lines, currency: tip.currency, refType: 'tip', refId: tip.id });
+  return postTransaction(db, { lines, currency: tip.currency, refType: 'tip', refId: tip.id, at });
 }
 
 /**
@@ -132,7 +134,7 @@ export async function postTipRefund(
 /** Processor fee becomes known: D processor_fee / C guest_clearing. */
 export async function postProcessorFee(
   db: Db,
-  args: { tipId: string; feeMinor: number; currency: string },
+  args: { tipId: string; feeMinor: number; currency: string; at?: Date },
 ): Promise<string | null> {
   if (args.feeMinor <= 0) return null;
   const expense = await ensureAccount(db, 'processor_fee', args.currency);
@@ -145,13 +147,14 @@ export async function postProcessorFee(
     currency: args.currency,
     refType: 'processor_fee',
     refId: args.tipId,
+    at: args.at,
   });
 }
 
 /** Payout: D guide_payable / C payout_clearing. */
 export async function postPayout(
   db: Db,
-  p: { id: string; guideId: string; amountMinor: number; currency: string },
+  p: { id: string; guideId: string; amountMinor: number; currency: string; at?: Date },
 ): Promise<string> {
   const payable = await ensureAccount(db, 'guide_payable', p.currency, p.guideId);
   const clearing = await ensureAccount(db, 'payout_clearing', p.currency);
@@ -163,6 +166,7 @@ export async function postPayout(
     currency: p.currency,
     refType: 'payout',
     refId: p.id,
+    at: p.at,
   });
 }
 
